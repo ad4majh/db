@@ -318,6 +318,16 @@ class Oci8 implements DriverInterface
     }
 
     /**
+     * {@inheritdoc}
+     *
+     * @return int
+     */
+    public function affectedRows()
+    {
+        return oci_num_rows($this->statement);
+    }
+
+    /**
      * Get Value Type
      *
      * Unify value types accross all drivers

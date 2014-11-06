@@ -289,6 +289,16 @@ class Pdo implements DriverInterface
     }
 
     /**
+     * {@inheritdoc}
+     *
+     * @return int
+     */
+    public function affectedRows()
+    {
+       return $this->statement->rowCount();
+    }
+
+    /**
      * Get Value Type
      *
      * Unify value types accross all drivers

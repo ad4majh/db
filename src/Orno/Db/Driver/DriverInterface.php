@@ -123,9 +123,18 @@ interface DriverInterface
     public function lastInsertId($name = '');
 
     /**
+     * Affected Rows
+     *
+     * Returns the affected row count for the latest query
+     *
+     * @return integer
+     */
+    public function affectedRows();
+
+    /**
      * Fetch All
      *
-     * Return a multi-deminesional array of all rows from the result set
+     * Return a multi-dimensional array of all rows from the result set
      *
      * <code>
      * [

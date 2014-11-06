@@ -325,6 +325,47 @@ class PdoIntegrationTest extends \PHPUnit_Framework_TestCase
         $this->assertSame((string) count($initialData), $this->driver->lastInsertId());
     }
 
+    public function testAffectedRows()
+    {
+        $this->driver->transaction();
+
+        $this->driver->prepareQuery('CREATE TABLE test_data (username varchar(100), email varchar(100))');
+        $this->driver->execute();
+
+        $initialData = $this->getInitialData();
+        foreach ($initialData as $id => $data) {
+            $this->driver->prepareQuery('INSERT INTO test_data VALUES (:username, :email)');
+            $this->driver->bind(':username', $data['username']);
+            $this->driver->bind(':email', $data['email']);
+            $this->driver->execute();
+        }
+
+        $this->driver->commit();
+
+        // INSERT 1
+        $this->driver->prepareQuery('INSERT INTO test_data VALUES (:username, :email)');
+        $this->driver->bind(':username', 'test');
+        $this->driver->bind(':email', 'test@example.com');
+        $this->driver->execute();
+
+        $this->assertSame(1, $this->driver->affectedRows());
+
+        // DELETE 2
+        $this->driver->prepareQuery('DELETE FROM test_data WHERE username LIKE :username OR email LIKE :email');
+        $randKeys = array_rand($initialData,2);
+        $this->driver->bind(':username', $initialData[$randKeys[0]]['username']);
+        $this->driver->bind(':email', $initialData[$randKeys[1]]['email']);
+        $this->driver->execute();
+
+        $this->assertSame(2, $this->driver->affectedRows());
+
+        // UPDATE 4
+        $this->driver->prepareQuery('UPDATE test_data SET email = NULL');
+        $this->driver->execute();
+
+        $this->assertSame(4, $this->driver->affectedRows());
+    }
+
     public function getInitialData()
     {
         return [
